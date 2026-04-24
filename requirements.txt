@@ -1,0 +1,8 @@
+psutil>=5.9
+# Optional (enable with pip install -r requirements-optional.txt):
+#   anthropic>=0.34        # Claude intent extraction
+#   pyobjc-core>=10        # macOS capture
+#   pyobjc-framework-AppKit>=10
+#   pyobjc-framework-Quartz>=10
+#   pywin32>=306           # Windows capture
+#   PyGetWindow>=0.0.9     # cross-platform fallback

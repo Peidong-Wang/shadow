@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Shadow · Desktop Agent Forge</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-alt: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #f0883e;
+    --accent-soft: rgba(240, 136, 62, 0.15);
+    --ok: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  header .logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #cc6a1f);
+    display: grid; place-items: center;
+    font-weight: 700;
+  }
+  header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 13px; margin-left: auto; }
+  main { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
+  .grid {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .stat .label { color: var(--muted); font-size: 13px; }
+  .stat .value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+  .section { margin-top: 28px; }
+  .section h2 {
+    font-size: 15px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin: 0 0 10px 0;
+  }
+  .row {
+    display: flex; gap: 10px; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: none; }
+  .row .meta { color: var(--muted); font-size: 12px; font-family: ui-monospace, monospace; }
+  .row .title { font-weight: 500; }
+  button {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  button:hover { background: var(--accent); color: #0d1117; }
+  button.secondary {
+    background: transparent; color: var(--muted); border-color: var(--border);
+  }
+  button.secondary:hover { background: var(--panel-alt); color: var(--text); }
+  .pattern-steps {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  }
+  .step-chip {
+    background: var(--panel-alt); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 999px; font-size: 12px;
+    font-family: ui-monospace, monospace;
+  }
+  .agent-spec {
+    background: var(--panel-alt); border-radius: 8px; padding: 12px;
+    margin-top: 10px; font-family: ui-monospace, monospace; font-size: 12px;
+    white-space: pre-wrap; max-height: 300px; overflow: auto;
+  }
+  .empty {
+    text-align: center; color: var(--muted); padding: 40px; font-size: 14px;
+  }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 11px; font-weight: 600; margin-left: 6px;
+  }
+  .toolbar {
+    display: flex; gap: 8px; margin-bottom: 12px;
+  }
+  .event-row { font-family: ui-monospace, monospace; font-size: 12px; }
+  .event-row .app { color: var(--accent); }
+  code { background: var(--panel-alt); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">S</div>
+  <h1>Shadow</h1>
+  <span class="pill" id="version">v0.1.0</span>
+  <span class="sub">Watch · Learn · Forge agents</span>
+</header>
+<main>
+  <div class="grid">
+    <div class="card stat"><div class="label">Events captured</div><div class="value" id="stat-events">—</div></div>
+    <div class="card stat"><div class="label">Sessions</div><div class="value" id="stat-sessions">—</div></div>
+    <div class="card stat"><div class="label">Patterns found</div><div class="value" id="stat-patterns">—</div></div>
+    <div class="card stat"><div class="label">Storage</div><div class="value" style="font-size:14px" id="stat-db">—</div></div>
+  </div>
+
+  <div class="section">
+    <div class="toolbar">
+      <h2 style="flex:1; margin:0">Patterns</h2>
+      <button onclick="detectPatterns()">Detect patterns</button>
+    </div>
+    <div class="card" id="patterns"><div class="empty">No patterns discovered yet. Use your computer for a while, then click <b>Detect patterns</b>.</div></div>
+  </div>
+
+  <div class="section">
+    <h2>Recent events</h2>
+    <div class="card" id="events"><div class="empty">No events captured yet.</div></div>
+  </div>
+
+  <div class="section">
+    <h2>Privacy</h2>
+    <div class="card">
+      <p style="margin:0 0 8px 0; font-size:14px">
+        Everything in Shadow is <strong>local by default</strong>. Captured events live in
+        <code id="dbpath">…</code> on this machine and never leave it unless you click
+        <em>Extract intent</em>, which sends the sanitized step outline of a single
+        pattern to Claude.
+      </p>
+      <p style="margin:0; font-size:13px; color: var(--muted)">
+        Raw keystrokes are never stored. Shadow only tracks app focus, window titles,
+        and URLs — all configurable in <code>Config</code>.
+      </p>
+    </div>
+  </div>
+</main>
+<script>
+async function refreshStats() {
+  const r = await fetch('/api/stats').then(r => r.json());
+  document.getElementById('stat-events').textContent = r.event_count;
+  document.getElementById('stat-sessions').textContent = r.session_count;
+  document.getElementById('stat-patterns').textContent = r.pattern_count;
+  document.getElementById('stat-db').textContent = r.db_path;
+  document.getElementById('dbpath').textContent = r.db_path;
+}
+
+async function refreshEvents() {
+  const events = await fetch('/api/events').then(r => r.json());
+  const box = document.getElementById('events');
+  if (!events.length) {
+    box.innerHTML = '<div class="empty">No events captured yet.</div>';
+    return;
+  }
+  box.innerHTML = events.map(e => `
+    <div class="row event-row">
+      <div>
+        <span class="meta">${new Date(e.ts * 1000).toLocaleTimeString()}</span>
+        <span class="app"> ${e.app || '-'}</span>
+        · ${e.event_type}
+        ${e.window_title ? `· <span class="meta">${escapeHtml(e.window_title)}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function refreshPatterns() {
+  const patterns = await fetch('/api/patterns').then(r => r.json());
+  const box = document.getElementById('patterns');
+  if (!patterns.length) {
+    box.innerHTML = '<div class="empty">No patterns discovered yet. Use your computer for a while, then click <b>Detect patterns</b>.</div>';
+    return;
+  }
+  box.innerHTML = patterns.map(p => `
+    <div class="row" style="display:block">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <div class="title">Pattern #${p.id} <span class="pill">${p.occurrence_count}×</span></div>
+        <div>
+          <button onclick="extract(${p.id})">${p.intent_summary ? 'Re-extract' : 'Extract intent'}</button>
+          ${p.agent_spec ? `<button class="secondary" onclick="runPattern(${p.id})">Dry-run</button>` : ''}
+        </div>
+      </div>
+      <div class="pattern-steps">
+        ${p.signature.split('\n').map(s => `<span class="step-chip">${escapeHtml(s)}</span>`).join('')}
+      </div>
+      ${p.intent_summary ? `<div class="agent-spec">${escapeHtml(JSON.stringify(p.agent_spec, null, 2))}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>\"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+}
+
+async function detectPatterns() {
+  await fetch('/api/detect', { method: 'POST' });
+  refreshPatterns();
+  refreshStats();
+}
+
+async function extract(id) {
+  const r = await fetch(`/api/patterns/${id}/extract`, { method: 'POST' }).then(r => r.json());
+  if (r.error) {
+    alert('Extraction failed: ' + r.error);
+    return;
+  }
+  refreshPatterns();
+}
+
+async function runPattern(id) {
+  const r = await fetch(`/api/patterns/${id}/run`, { method: 'POST' }).then(r => r.json());
+  alert('Dry-run results:\n\n' + r.map(x => `${x.step}: ${x.ok ? '✓' : '✗'} ${x.message}`).join('\n'));
+}
+
+refreshStats();
+refreshEvents();
+refreshPatterns();
+setInterval(() => { refreshStats(); refreshEvents(); }, 3000);
+</script>
+</body>
+</html>
