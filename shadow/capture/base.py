@@ -8,12 +8,15 @@ detection, session segmentation, and writing into the database.
 from __future__ import annotations
 
 import abc
+import logging
 import threading
 import time
 from typing import Callable, Iterator
 
 from ..config import Config, config as default_config
 from ..storage import Database, Event
+
+log = logging.getLogger("shadow.capture")
 
 
 class CaptureBackend(abc.ABC):
@@ -105,9 +108,9 @@ class Capture:
                 self._log_error(exc)
 
     def _log_error(self, exc: Exception) -> None:
-        # Intentional: never let a capture error take down the background thread.
-        # Users can view errors via debug logging if they need to.
-        pass
+        # Never let a capture error take down the background thread,
+        # but do log it so users can diagnose issues with DEBUG level.
+        log.debug("Capture error (%s): %s", type(exc).__name__, exc, exc_info=True)
 
     # ------------------------------------------------------------------
     # Test/CLI helpers

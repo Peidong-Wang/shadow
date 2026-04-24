@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -11,7 +12,7 @@ def _default_data_dir() -> Path:
     """Return the platform-appropriate data directory for Shadow."""
     if os.name == "nt":
         base = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
-    elif os.sys.platform == "darwin":
+    elif sys.platform == "darwin":
         base = Path.home() / "Library" / "Application Support"
     else:
         base = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
@@ -43,7 +44,7 @@ class Config:
 
     # Claude intent extraction
     anthropic_api_key: str | None = field(default_factory=lambda: os.environ.get("ANTHROPIC_API_KEY"))
-    claude_model: str = "claude-sonnet-4-6"
+    claude_model: str = "claude-sonnet-4-5-20241022"
 
     # Dashboard
     dashboard_host: str = "127.0.0.1"

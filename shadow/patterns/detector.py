@@ -80,13 +80,13 @@ class PatternDetector:
     def detect_and_persist(self) -> list[int]:
         """Detect patterns and save any new ones. Returns list of pattern row ids."""
         patterns = self.detect()
-        existing_sigs = {tuple(p["signature"].split("\n")) for p in self.db.list_patterns()}
+        existing_sigs = {tuple(p["signature"].split("\x00")) for p in self.db.list_patterns()}
         new_ids: list[int] = []
         for p in patterns:
             if p.signature in existing_sigs:
                 continue
             row_id = self.db.save_pattern(
-                signature="\n".join(p.signature),
+                signature="\x00".join(p.signature),
                 occurrence_count=p.occurrences,
                 avg_similarity=p.similarity,
                 sample_event_ids=p.sample_event_ids,

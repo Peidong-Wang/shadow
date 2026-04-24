@@ -105,7 +105,7 @@ class _Handler(BaseHTTPRequestHandler):
                 _json_response(self, {"error": "unknown pattern"}, status=404)
                 return
             from ..patterns import Pattern
-            signature = tuple(row["signature"].split("\n"))
+            signature = tuple(row["signature"].split("\x00"))
             pattern = Pattern(
                 signature=signature,
                 occurrences=row["occurrence_count"],
