@@ -15,6 +15,8 @@
     --accent: #f0883e;
     --accent-soft: rgba(240, 136, 62, 0.15);
     --ok: #3fb950;
+    --warn: #d29922;
+    --error: #da3633;
   }
   * { box-sizing: border-box; }
   body {
@@ -25,89 +27,176 @@
     min-height: 100vh;
   }
   header {
-    padding: 20px 32px;
+    padding: 16px 24px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    background: var(--panel);
   }
   header .logo {
-    width: 32px; height: 32px; border-radius: 8px;
+    width: 28px; height: 28px; border-radius: 6px;
     background: linear-gradient(135deg, var(--accent), #cc6a1f);
     display: grid; place-items: center;
-    font-weight: 700;
+    font-weight: 700; font-size: 14px;
   }
-  header h1 { font-size: 18px; margin: 0; font-weight: 600; }
-  header .sub { color: var(--muted); font-size: 13px; margin-left: auto; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .pill { color: var(--muted); font-size: 12px; margin-left: auto; }
+  nav {
+    display: flex; gap: 2px; padding: 0 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  nav button {
+    background: transparent; border: none; color: var(--muted);
+    padding: 12px 16px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 200ms;
+  }
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
   main { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
-  .grid {
-    display: grid; gap: 16px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    margin-bottom: 24px;
+  .section { margin-bottom: 32px; }
+  .section h2 {
+    font-size: 14px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border);
   }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 16px;
   }
-  .stat .label { color: var(--muted); font-size: 13px; }
-  .stat .value { font-size: 28px; font-weight: 700; margin-top: 4px; }
-  .section { margin-top: 28px; }
-  .section h2 {
-    font-size: 15px; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.06em;
-    margin: 0 0 10px 0;
-  }
+  .stat .label { color: var(--muted); font-size: 12px; }
+  .stat .value { font-size: 24px; font-weight: 700; margin-top: 6px; }
   .row {
     display: flex; gap: 10px; align-items: center; justify-content: space-between;
-    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    padding: 12px 0; border-bottom: 1px solid var(--border);
   }
   .row:last-child { border-bottom: none; }
-  .row .meta { color: var(--muted); font-size: 12px; font-family: ui-monospace, monospace; }
+  .row .meta { color: var(--muted); font-size: 11px; font-family: ui-monospace, monospace; }
   .row .title { font-weight: 500; }
+  .row .actions { display: flex; gap: 6px; }
   button {
     background: var(--accent-soft);
     color: var(--accent);
     border: 1px solid var(--accent);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
+    white-space: nowrap;
+    transition: all 150ms;
   }
-  button:hover { background: var(--accent); color: #0d1117; }
+  button:hover { background: var(--accent); color: var(--bg); }
+  button:active { opacity: 0.8; }
   button.secondary {
     background: transparent; color: var(--muted); border-color: var(--border);
   }
   button.secondary:hover { background: var(--panel-alt); color: var(--text); }
-  .pattern-steps {
-    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  button.small { padding: 4px 8px; font-size: 11px; }
+  .toolbar {
+    display: flex; gap: 8px; margin-bottom: 16px; align-items: center;
+    flex-wrap: wrap;
   }
-  .step-chip {
-    background: var(--panel-alt); border: 1px solid var(--border);
-    padding: 3px 10px; border-radius: 999px; font-size: 12px;
-    font-family: ui-monospace, monospace;
+  .search-box {
+    flex: 1; min-width: 200px;
   }
-  .agent-spec {
-    background: var(--panel-alt); border-radius: 8px; padding: 12px;
-    margin-top: 10px; font-family: ui-monospace, monospace; font-size: 12px;
-    white-space: pre-wrap; max-height: 300px; overflow: auto;
+  input[type="text"], input[type="number"], select, textarea {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-family: inherit;
+    width: 100%;
   }
-  .empty {
-    text-align: center; color: var(--muted); padding: 40px; font-size: 14px;
+  input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft);
   }
-  .pill {
+  textarea { resize: vertical; min-height: 80px; }
+  .form-group {
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .confidence-bar {
+    display: inline-block;
+    height: 20px;
+    background: linear-gradient(90deg, var(--error), var(--warn), var(--ok));
+    border-radius: 3px;
+    min-width: 100px;
+    font-size: 11px;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+  }
+  .badge {
     display: inline-block; padding: 2px 8px; border-radius: 999px;
     background: var(--accent-soft); color: var(--accent);
-    font-size: 11px; font-weight: 600; margin-left: 6px;
+    font-size: 10px; font-weight: 600;
   }
-  .toolbar {
-    display: flex; gap: 8px; margin-bottom: 12px;
+  .badge.ok { background: rgba(63, 185, 80, 0.15); color: var(--ok); }
+  .badge.pin { background: rgba(240, 136, 62, 0.15); color: var(--accent); }
+  .empty {
+    text-align: center; color: var(--muted); padding: 32px 24px; font-size: 13px;
   }
-  .event-row { font-family: ui-monospace, monospace; font-size: 12px; }
+  .pattern-item, .event-item, .rule-item, .agent-item, .template-item {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .pattern-item:last-child, .event-item:last-child, .rule-item:last-child,
+  .agent-item:last-child, .template-item:last-child { margin-bottom: 0; }
+  .event-row { font-family: ui-monospace, monospace; font-size: 11px; }
   .event-row .app { color: var(--accent); }
-  code { background: var(--panel-alt); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  .event-row .type { color: var(--muted); }
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal h3 { margin-top: 0; }
+  .modal-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;
+  }
+  .hidden { display: none !important; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .toggle {
+    display: inline-flex; align-items: center;
+    padding: 4px 8px;
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .toggle input {
+    margin: 0 6px 0 0;
+    cursor: pointer;
+  }
+  .filter-row {
+    display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .filter-row button { margin: 0; }
 </style>
 </head>
 <body>
@@ -115,126 +204,668 @@
   <div class="logo">S</div>
   <h1>Shadow</h1>
   <span class="pill" id="version">v0.1.0</span>
-  <span class="sub">Watch · Learn · Forge agents</span>
 </header>
+<nav>
+  <button class="nav-tab active" data-tab="events">Events</button>
+  <button class="nav-tab" data-tab="patterns">Patterns</button>
+  <button class="nav-tab" data-tab="agents">Agents</button>
+  <button class="nav-tab" data-tab="scheduler">Scheduler</button>
+  <button class="nav-tab" data-tab="marketplace">Marketplace</button>
+  <button class="nav-tab" data-tab="settings">Settings</button>
+</nav>
 <main>
-  <div class="grid">
-    <div class="card stat"><div class="label">Events captured</div><div class="value" id="stat-events">—</div></div>
-    <div class="card stat"><div class="label">Sessions</div><div class="value" id="stat-sessions">—</div></div>
-    <div class="card stat"><div class="label">Patterns found</div><div class="value" id="stat-patterns">—</div></div>
-    <div class="card stat"><div class="label">Storage</div><div class="value" style="font-size:14px" id="stat-db">—</div></div>
-  </div>
-
-  <div class="section">
-    <div class="toolbar">
-      <h2 style="flex:1; margin:0">Patterns</h2>
-      <button onclick="detectPatterns()">Detect patterns</button>
+  <!-- EVENTS TAB -->
+  <div class="tab-content active" id="events-tab">
+    <div class="section">
+      <h2>Events</h2>
+      <div class="toolbar">
+        <input type="text" id="event-search" class="search-box" placeholder="Search by app, title...">
+        <button onclick="toggleEventFilters()">Filters</button>
+        <button class="secondary" onclick="refreshEvents()">Refresh</button>
+      </div>
+      <div id="event-filters" class="filter-row hidden">
+        <input type="text" placeholder="App name..." id="event-filter-app" style="max-width: 150px;">
+        <select id="event-filter-type" style="max-width: 150px;">
+          <option value="">All event types</option>
+          <option value="focus">Focus</option>
+          <option value="click">Click</option>
+          <option value="type">Type</option>
+        </select>
+        <input type="date" id="event-filter-date" style="max-width: 150px;">
+      </div>
+      <div id="events-container" class="card">
+        <div class="empty">No events captured yet.</div>
+      </div>
     </div>
-    <div class="card" id="patterns"><div class="empty">No patterns discovered yet. Use your computer for a while, then click <b>Detect patterns</b>.</div></div>
   </div>
 
-  <div class="section">
-    <h2>Recent events</h2>
-    <div class="card" id="events"><div class="empty">No events captured yet.</div></div>
+  <!-- PATTERNS TAB -->
+  <div class="tab-content" id="patterns-tab">
+    <div class="section">
+      <h2>Detected Patterns</h2>
+      <div class="toolbar">
+        <button onclick="detectPatterns()">Detect patterns</button>
+        <button class="secondary" onclick="refreshPatterns()">Refresh</button>
+      </div>
+      <div class="filter-row">
+        <button id="filter-all" class="secondary" onclick="filterPatterns('all')">All</button>
+        <button id="filter-pinned" class="secondary" onclick="filterPatterns('pinned')">Pinned</button>
+        <button id="filter-archived" class="secondary" onclick="filterPatterns('archived')">Archived</button>
+      </div>
+      <div id="patterns-container" class="card">
+        <div class="empty">No patterns discovered yet.</div>
+      </div>
+    </div>
   </div>
 
-  <div class="section">
-    <h2>Privacy</h2>
-    <div class="card">
-      <p style="margin:0 0 8px 0; font-size:14px">
-        Everything in Shadow is <strong>local by default</strong>. Captured events live in
-        <code id="dbpath">…</code> on this machine and never leave it unless you click
-        <em>Extract intent</em>, which sends the sanitized step outline of a single
-        pattern to Claude.
-      </p>
-      <p style="margin:0; font-size:13px; color: var(--muted)">
-        Raw keystrokes are never stored. Shadow only tracks app focus, window titles,
-        and URLs — all configurable in <code>Config</code>.
-      </p>
+  <!-- AGENTS TAB -->
+  <div class="tab-content" id="agents-tab">
+    <div class="section">
+      <h2>Extracted Agents</h2>
+      <div class="toolbar">
+        <button class="secondary" onclick="refreshAgents()">Refresh</button>
+      </div>
+      <div id="agents-container" class="card">
+        <div class="empty">No agent specs extracted yet. Use Patterns tab to extract intents.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULER TAB -->
+  <div class="tab-content" id="scheduler-tab">
+    <div class="section">
+      <h2>Schedule Rules</h2>
+      <div class="toolbar">
+        <button onclick="showAddRuleForm()">Add rule</button>
+        <button class="secondary" onclick="refreshSchedule()">Refresh</button>
+      </div>
+      <div id="schedule-rules-container" class="card">
+        <div class="empty">No schedule rules created yet.</div>
+      </div>
+    </div>
+    <div class="section">
+      <h2>Run History</h2>
+      <div id="schedule-history-container" class="card">
+        <div class="empty">No runs recorded yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETPLACE TAB -->
+  <div class="tab-content" id="marketplace-tab">
+    <div class="section">
+      <h2>Agent Templates</h2>
+      <div class="toolbar">
+        <button class="secondary" onclick="refreshMarketplace()">Refresh</button>
+      </div>
+      <div id="marketplace-container" class="card">
+        <div class="empty">Loading templates...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="tab-content" id="settings-tab">
+    <div class="section">
+      <h2>Providers</h2>
+      <div class="card" id="providers-container">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+    <div class="section">
+      <h2>Adapters</h2>
+      <div class="card" id="adapters-container">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+    <div class="section">
+      <h2>Configuration</h2>
+      <div class="card" id="settings-container">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard stats (always visible at top) -->
+  <div id="stats-section">
+    <div class="grid" style="margin-bottom: 32px;">
+      <div class="card stat">
+        <div class="label">Events captured</div>
+        <div class="value" id="stat-events">—</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Sessions</div>
+        <div class="value" id="stat-sessions">—</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Patterns found</div>
+        <div class="value" id="stat-patterns">—</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Storage</div>
+        <div class="value" style="font-size:13px" id="stat-db">—</div>
+      </div>
     </div>
   </div>
 </main>
+
+<!-- Modal for adding schedule rule -->
+<div class="modal-overlay" id="rule-modal">
+  <div class="modal">
+    <h3>Add Schedule Rule</h3>
+    <div class="form-group">
+      <label>Pattern</label>
+      <select id="rule-pattern" style="width: 100%;">
+        <option value="">Select a pattern...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Cron Expression (e.g., "0 9 * * 1-5" for 9am weekdays)</label>
+      <input type="text" id="rule-cron" placeholder="0 9 * * *">
+    </div>
+    <div class="form-group">
+      <label>Event Trigger (optional)</label>
+      <input type="text" id="rule-trigger" placeholder="e.g., 'when app closes'">
+    </div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeAddRuleForm()">Cancel</button>
+      <button onclick="saveScheduleRule()">Create</button>
+    </div>
+  </div>
+</div>
+
 <script>
+const API_BASE = '';
+let currentFilter = 'all';
+let allPatterns = [];
+let allEvents = [];
+let allAgents = [];
+
+// Tab navigation
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const tabName = e.target.dataset.tab;
+    switchTab(tabName);
+  });
+});
+
+function switchTab(tabName) {
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById(`${tabName}-tab`).classList.add('active');
+
+  // Trigger refresh on tab switch
+  if (tabName === 'events') refreshEvents();
+  if (tabName === 'patterns') refreshPatterns();
+  if (tabName === 'agents') refreshAgents();
+  if (tabName === 'scheduler') refreshSchedule();
+  if (tabName === 'marketplace') refreshMarketplace();
+  if (tabName === 'settings') refreshSettings();
+}
+
+// Refresh functions
 async function refreshStats() {
-  const r = await fetch('/api/stats').then(r => r.json());
-  document.getElementById('stat-events').textContent = r.event_count;
-  document.getElementById('stat-sessions').textContent = r.session_count;
-  document.getElementById('stat-patterns').textContent = r.pattern_count;
-  document.getElementById('stat-db').textContent = r.db_path;
-  document.getElementById('dbpath').textContent = r.db_path;
+  try {
+    const r = await fetch(`${API_BASE}/api/stats`).then(r => r.json());
+    document.getElementById('stat-events').textContent = r.event_count;
+    document.getElementById('stat-sessions').textContent = r.session_count;
+    document.getElementById('stat-patterns').textContent = r.pattern_count;
+    document.getElementById('stat-db').textContent = r.db_path.split('/').pop();
+  } catch (e) {
+    console.error('Error refreshing stats:', e);
+  }
 }
 
 async function refreshEvents() {
-  const events = await fetch('/api/events').then(r => r.json());
-  const box = document.getElementById('events');
-  if (!events.length) {
-    box.innerHTML = '<div class="empty">No events captured yet.</div>';
-    return;
-  }
-  box.innerHTML = events.map(e => `
-    <div class="row event-row">
-      <div>
-        <span class="meta">${new Date(e.ts * 1000).toLocaleTimeString()}</span>
-        <span class="app"> ${e.app || '-'}</span>
-        · ${e.event_type}
-        ${e.window_title ? `· <span class="meta">${escapeHtml(e.window_title)}</span>` : ''}
+  try {
+    const events = await fetch(`${API_BASE}/api/events`).then(r => r.json());
+    allEvents = events;
+    const container = document.getElementById('events-container');
+    if (!events.length) {
+      container.innerHTML = '<div class="empty">No events captured yet.</div>';
+      return;
+    }
+    const html = events.map(e => `
+      <div class="event-item event-row">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <div>
+            <span class="meta">${new Date(e.ts * 1000).toLocaleTimeString()}</span>
+            <span class="app"> ${e.app || '—'}</span>
+            <span class="type">${e.event_type}</span>
+          </div>
+        </div>
+        ${e.window_title ? `<div class="meta">Window: ${escapeHtml(e.window_title)}</div>` : ''}
+        ${e.url ? `<div class="meta">URL: ${escapeHtml(e.url)}</div>` : ''}
       </div>
-    </div>
-  `).join('');
+    `).join('');
+    container.innerHTML = html;
+  } catch (e) {
+    console.error('Error refreshing events:', e);
+  }
 }
 
 async function refreshPatterns() {
-  const patterns = await fetch('/api/patterns').then(r => r.json());
-  const box = document.getElementById('patterns');
-  if (!patterns.length) {
-    box.innerHTML = '<div class="empty">No patterns discovered yet. Use your computer for a while, then click <b>Detect patterns</b>.</div>';
+  try {
+    const patterns = await fetch(`${API_BASE}/api/patterns`).then(r => r.json());
+    allPatterns = patterns;
+    renderPatterns(patterns);
+  } catch (e) {
+    console.error('Error refreshing patterns:', e);
+  }
+}
+
+function renderPatterns(patterns, filter = 'all') {
+  const container = document.getElementById('patterns-container');
+  let filtered = patterns;
+  if (filter === 'pinned') filtered = patterns.filter(p => p.pinned);
+  if (filter === 'archived') filtered = patterns.filter(p => p.archived);
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty">No patterns match this filter.</div>';
     return;
   }
-  box.innerHTML = patterns.map(p => `
-    <div class="row" style="display:block">
-      <div style="display:flex; justify-content:space-between; align-items:center">
-        <div class="title">Pattern #${p.id} <span class="pill">${p.occurrence_count}×</span></div>
+
+  const html = filtered.map(p => `
+    <div class="pattern-item">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
         <div>
-          <button onclick="extract(${p.id})">${p.intent_summary ? 'Re-extract' : 'Extract intent'}</button>
-          ${p.agent_spec ? `<button class="secondary" onclick="runPattern(${p.id})">Dry-run</button>` : ''}
+          <strong>Pattern #${p.id}</strong>
+          <span class="badge">${p.occurrence_count}×</span>
+          ${p.pinned ? '<span class="badge pin">📌 Pinned</span>' : ''}
+          ${p.archived ? '<span class="badge">Archived</span>' : ''}
+        </div>
+        <div class="actions">
+          <button class="small" onclick="togglePin(${p.id})">📌</button>
+          <button class="small" onclick="toggleArchive(${p.id})">📁</button>
         </div>
       </div>
-      <div class="pattern-steps">
-        ${p.signature.split('\n').map(s => `<span class="step-chip">${escapeHtml(s)}</span>`).join('')}
+      <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
+        <span>Confidence: </span>
+        <div class="confidence-bar" style="width: ${Math.round(p.avg_similarity * 100)}%">${Math.round(p.avg_similarity * 100)}%</div>
       </div>
-      ${p.intent_summary ? `<div class="agent-spec">${escapeHtml(JSON.stringify(p.agent_spec, null, 2))}</div>` : ''}
+      <div style="font-family: monospace; font-size: 11px; margin-bottom: 8px; color: var(--muted);">
+        ${escapeHtml(p.signature)}
+      </div>
+      ${p.intent_summary ? `
+        <div style="background: var(--bg); padding: 8px; border-radius: 4px; margin-bottom: 8px;">
+          <div style="font-size: 12px; color: var(--text);"><strong>Intent:</strong> ${escapeHtml(p.intent_summary)}</div>
+        </div>
+      ` : ''}
+      <div class="actions" style="justify-content: flex-start;">
+        <button class="small" onclick="extractIntent(${p.id})">${p.intent_summary ? 'Re-extract' : 'Extract Intent'}</button>
+        ${p.agent_spec ? `<button class="small secondary" onclick="runPattern(${p.id})">Dry-run</button>` : ''}
+      </div>
     </div>
   `).join('');
+  container.innerHTML = html;
+}
+
+function filterPatterns(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('[id^="filter-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById(`filter-${filter}`).classList.add('active');
+  renderPatterns(allPatterns, filter);
+}
+
+async function refreshAgents() {
+  try {
+    const patterns = await fetch(`${API_BASE}/api/patterns`).then(r => r.json());
+    const agents = patterns.filter(p => p.agent_spec);
+    allAgents = agents;
+    const container = document.getElementById('agents-container');
+    if (!agents.length) {
+      container.innerHTML = '<div class="empty">No agents extracted yet.</div>';
+      return;
+    }
+    const html = agents.map(a => `
+      <div class="agent-item">
+        <div style="margin-bottom: 8px;">
+          <strong>${escapeHtml(a.agent_spec.name)}</strong>
+          <span class="badge">${a.agent_spec.steps.length} steps</span>
+        </div>
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">
+          ${escapeHtml(a.agent_spec.summary)}
+        </div>
+        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
+          <strong>Trigger:</strong> ${escapeHtml(a.agent_spec.trigger)}
+        </div>
+        <div class="actions">
+          <button class="small" onclick="runPattern(${a.id})">Run</button>
+          <button class="small secondary" onclick="showAgentSpec(${a.id})">View</button>
+        </div>
+      </div>
+    `).join('');
+    container.innerHTML = html;
+  } catch (e) {
+    console.error('Error refreshing agents:', e);
+  }
+}
+
+async function refreshSchedule() {
+  try {
+    const rules = await fetch(`${API_BASE}/api/schedule/rules`).then(r => r.json());
+    const history = await fetch(`${API_BASE}/api/schedule/history`).then(r => r.json());
+
+    const rulesContainer = document.getElementById('schedule-rules-container');
+    if (!rules.length) {
+      rulesContainer.innerHTML = '<div class="empty">No schedule rules created yet.</div>';
+    } else {
+      const html = rules.map(r => `
+        <div class="rule-item">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>Pattern #${r.pattern_id}</strong>
+              <span class="meta">${escapeHtml(r.cron_expr)}</span>
+              ${r.event_trigger ? `<div class="meta">Trigger: ${escapeHtml(r.event_trigger)}</div>` : ''}
+            </div>
+            <div class="actions">
+              <button class="small" onclick="toggleScheduleRule(${r.id})">
+                ${r.enabled ? 'Disable' : 'Enable'}
+              </button>
+              <button class="small secondary" onclick="deleteScheduleRule(${r.id})">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      rulesContainer.innerHTML = html;
+    }
+
+    const historyContainer = document.getElementById('schedule-history-container');
+    if (!history.length) {
+      historyContainer.innerHTML = '<div class="empty">No runs recorded yet.</div>';
+    } else {
+      const html = history.map(h => `
+        <div class="rule-item">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <span class="meta">${new Date(h.ran_at * 1000).toLocaleString()}</span>
+              <span class="badge ${h.success ? 'ok' : ''}">${h.success ? '✓' : '✗'}</span>
+              ${h.message ? `<div class="meta">${escapeHtml(h.message)}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+      historyContainer.innerHTML = html;
+    }
+  } catch (e) {
+    console.error('Error refreshing schedule:', e);
+  }
+}
+
+async function refreshMarketplace() {
+  try {
+    const data = await fetch(`${API_BASE}/api/marketplace`).then(r => r.json());
+    const container = document.getElementById('marketplace-container');
+    if (!data.templates || !data.templates.length) {
+      container.innerHTML = '<div class="empty">No templates available.</div>';
+      return;
+    }
+    const html = data.templates.map(t => `
+      <div class="template-item">
+        <div style="margin-bottom: 8px;">
+          <strong>${escapeHtml(t.name)}</strong>
+          <span class="badge">${t.steps_count} steps</span>
+        </div>
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">
+          ${escapeHtml(t.summary)}
+        </div>
+        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
+          <strong>Trigger:</strong> ${escapeHtml(t.trigger)}
+        </div>
+        ${t.inputs.length ? `
+          <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
+            <strong>Requires:</strong> ${t.inputs.map(i => escapeHtml(i.name)).join(', ')}
+          </div>
+        ` : ''}
+        ${t.notes ? `<div style="font-size: 11px; color: var(--warn); margin-bottom: 8px;">ℹ ${escapeHtml(t.notes)}</div>` : ''}
+        <div class="actions">
+          <button class="small" onclick="installTemplate('${escapeHtml(t.name)}')">Install</button>
+        </div>
+      </div>
+    `).join('');
+    container.innerHTML = html;
+  } catch (e) {
+    console.error('Error refreshing marketplace:', e);
+  }
+}
+
+async function refreshSettings() {
+  try {
+    const settings = await fetch(`${API_BASE}/api/settings`).then(r => r.json());
+    const providers = await fetch(`${API_BASE}/api/providers`).then(r => r.json());
+    const adapters = await fetch(`${API_BASE}/api/adapters`).then(r => r.json());
+
+    // Providers
+    const providersContainer = document.getElementById('providers-container');
+    providersContainer.innerHTML = `
+      <div style="margin-bottom: 12px;">
+        <strong>Intent Extraction Provider</strong>
+        <div style="margin-top: 8px;">
+          ${providers.providers.map(p => `
+            <div class="toggle">
+              <input type="radio" name="provider" value="${p}" ${p === providers.active ? 'checked' : ''}>
+              <span>${p}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div style="font-size: 12px; color: var(--muted);">
+        Selected: <strong>${providers.active}</strong>
+      </div>
+    `;
+
+    // Adapters
+    const adaptersContainer = document.getElementById('adapters-container');
+    adaptersContainer.innerHTML = adapters.adapters.map(a => `
+      <div class="row">
+        <div>
+          <strong>${escapeHtml(a.name)}</strong>
+          <div class="meta">${a.status}</div>
+        </div>
+        <span class="badge ${a.available ? 'ok' : ''}">${a.available ? '✓' : '✗'}</span>
+      </div>
+    `).join('');
+
+    // Settings
+    const settingsContainer = document.getElementById('settings-container');
+    settingsContainer.innerHTML = `
+      <div class="form-group">
+        <label>Capture Poll Interval (seconds)</label>
+        <input type="number" value="${settings.capture_poll_interval}" disabled>
+      </div>
+      <div class="form-group">
+        <label>Capture Idle Gap (seconds)</label>
+        <input type="number" value="${settings.capture_idle_gap}" disabled>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" ${settings.store_titles ? 'checked' : ''} disabled>
+          Store window titles
+        </label>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" ${settings.store_urls ? 'checked' : ''} disabled>
+          Store URLs
+        </label>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" ${settings.privacy_enabled ? 'checked' : ''} disabled>
+          Privacy mode (redact sensitive values)
+        </label>
+      </div>
+      <div style="font-size: 12px; color: var(--muted); margin-top: 12px;">
+        Configuration is read-only in the web dashboard. Edit <code>config.py</code> to change settings.
+      </div>
+    `;
+  } catch (e) {
+    console.error('Error refreshing settings:', e);
+  }
+}
+
+// Action functions
+async function detectPatterns() {
+  try {
+    await fetch(`${API_BASE}/api/detect`, { method: 'POST' });
+    refreshStats();
+    refreshPatterns();
+  } catch (e) {
+    console.error('Error detecting patterns:', e);
+  }
+}
+
+async function extractIntent(patternId) {
+  try {
+    const r = await fetch(`${API_BASE}/api/patterns/${patternId}/extract`, { method: 'POST' }).then(r => r.json());
+    if (r.error) {
+      alert('Extraction failed: ' + r.error);
+      return;
+    }
+    refreshPatterns();
+    refreshAgents();
+  } catch (e) {
+    console.error('Error extracting intent:', e);
+  }
+}
+
+async function runPattern(patternId) {
+  try {
+    const r = await fetch(`${API_BASE}/api/patterns/${patternId}/run`, { method: 'POST' }).then(r => r.json());
+    if (r.error) {
+      alert('Dry-run failed: ' + r.error);
+      return;
+    }
+    const results = r.map(x => `Step ${x.step}: ${x.ok ? '✓' : '✗'} ${x.message}`).join('\n');
+    alert('Dry-run results:\n\n' + results);
+  } catch (e) {
+    console.error('Error running pattern:', e);
+  }
+}
+
+async function togglePin(patternId) {
+  try {
+    const r = await fetch(`${API_BASE}/api/patterns/${patternId}/pin`, { method: 'POST' }).then(r => r.json());
+    refreshPatterns();
+  } catch (e) {
+    console.error('Error toggling pin:', e);
+  }
+}
+
+async function toggleArchive(patternId) {
+  try {
+    const r = await fetch(`${API_BASE}/api/patterns/${patternId}/archive`, { method: 'POST' }).then(r => r.json());
+    refreshPatterns();
+  } catch (e) {
+    console.error('Error toggling archive:', e);
+  }
+}
+
+async function installTemplate(name) {
+  try {
+    const r = await fetch(`${API_BASE}/api/marketplace/${encodeURIComponent(name)}/install`, { method: 'POST' }).then(r => r.json());
+    if (r.error) {
+      alert('Installation failed: ' + r.error);
+      return;
+    }
+    alert('Template installed! Pattern #' + r.pattern_id);
+    refreshPatterns();
+    refreshAgents();
+  } catch (e) {
+    console.error('Error installing template:', e);
+  }
+}
+
+// Schedule functions
+function showAddRuleForm() {
+  document.getElementById('rule-modal').classList.add('active');
+  // Populate pattern dropdown
+  fetch(`${API_BASE}/api/patterns`).then(r => r.json()).then(patterns => {
+    const select = document.getElementById('rule-pattern');
+    select.innerHTML = '<option value="">Select a pattern...</option>' +
+      patterns.filter(p => p.agent_spec).map(p => `<option value="${p.id}">Pattern #${p.id}: ${p.intent_summary}</option>`).join('');
+  });
+}
+
+function closeAddRuleForm() {
+  document.getElementById('rule-modal').classList.remove('active');
+}
+
+async function saveScheduleRule() {
+  const patternId = document.getElementById('rule-pattern').value;
+  const cronExpr = document.getElementById('rule-cron').value;
+  const trigger = document.getElementById('rule-trigger').value;
+
+  if (!patternId || !cronExpr) {
+    alert('Pattern and cron expression are required');
+    return;
+  }
+
+  try {
+    const r = await fetch(`${API_BASE}/api/schedule/rules`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pattern_id: parseInt(patternId),
+        cron_expr: cronExpr,
+        event_trigger: trigger || null,
+      }),
+    }).then(r => r.json());
+
+    if (r.error) {
+      alert('Error creating rule: ' + r.error);
+      return;
+    }
+    closeAddRuleForm();
+    refreshSchedule();
+  } catch (e) {
+    console.error('Error creating rule:', e);
+  }
+}
+
+async function toggleScheduleRule(ruleId) {
+  // Not implemented in API yet
+  alert('Toggle not yet implemented');
+}
+
+async function deleteScheduleRule(ruleId) {
+  if (!confirm('Delete this schedule rule?')) return;
+  try {
+    await fetch(`${API_BASE}/api/schedule/rules/${ruleId}`, { method: 'DELETE' });
+    refreshSchedule();
+  } catch (e) {
+    console.error('Error deleting rule:', e);
+  }
+}
+
+function toggleEventFilters() {
+  document.getElementById('event-filters').classList.toggle('hidden');
+}
+
+function showAgentSpec(patternId) {
+  const agent = allAgents.find(a => a.id === patternId);
+  if (!agent) return;
+  alert(`Agent: ${escapeHtml(agent.agent_spec.name)}\n\n${JSON.stringify(agent.agent_spec, null, 2)}`);
 }
 
 function escapeHtml(s) {
-  return (s || '').replace(/[&<>\"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  return (s || '').replace(/[&<>"]/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'
+  }[ch]));
 }
 
-async function detectPatterns() {
-  await fetch('/api/detect', { method: 'POST' });
-  refreshPatterns();
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
   refreshStats();
-}
-
-async function extract(id) {
-  const r = await fetch(`/api/patterns/${id}/extract`, { method: 'POST' }).then(r => r.json());
-  if (r.error) {
-    alert('Extraction failed: ' + r.error);
-    return;
-  }
+  refreshEvents();
   refreshPatterns();
-}
-
-async function runPattern(id) {
-  const r = await fetch(`/api/patterns/${id}/run`, { method: 'POST' }).then(r => r.json());
-  alert('Dry-run results:\n\n' + r.map(x => `${x.step}: ${x.ok ? '✓' : '✗'} ${x.message}`).join('\n'));
-}
-
-refreshStats();
-refreshEvents();
-refreshPatterns();
-setInterval(() => { refreshStats(); refreshEvents(); }, 3000);
+  refreshAgents();
+  refreshSchedule();
+  refreshMarketplace();
+  refreshSettings();
+  setInterval(refreshStats, 5000);
+});
 </script>
 </body>
 </html>

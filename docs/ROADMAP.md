@@ -1,47 +1,62 @@
 # Roadmap
 
-## v0.1 — Today (✅ shipped)
+## v0.1 — Foundation (✅ shipped)
 
-- Per-OS capture (macOS, Windows, Linux, generic fallback).
-- Local SQLite storage with session segmentation.
-- N-gram pattern detection.
-- Claude intent extraction with a structured `AgentSpec` output.
-- Zero-dep web dashboard.
-- Dry-run executor.
+- [x] Per-OS capture (macOS, Windows, Linux, generic fallback).
+- [x] Local SQLite storage with session segmentation.
+- [x] N-gram pattern detection.
+- [x] Claude intent extraction with a structured `AgentSpec` output.
+- [x] Zero-dep web dashboard.
+- [x] Dry-run executor.
 
-## v0.2 — The "actually useful" milestone
+## v0.2 — The "actually useful" milestone (✅ shipped)
 
-- [ ] Edit-distance clustering so near-duplicate patterns merge into one.
+- [x] Edit-distance clustering so near-duplicate patterns merge into one.
+- [x] Per-pattern "confidence score" combining frequency, recency, and consistency.
+- [x] Dashboard UX: searchable event log, pattern filters, pin/archive, tabbed views.
 - [ ] Browser extension for Chromium + Firefox yielding rich DOM-level events.
 - [ ] AT-SPI2 on Linux for full accessibility-tree capture under GNOME/KDE.
 - [ ] Playwright-based live executor for browser-centric agents.
-- [ ] Per-pattern "confidence score" combining frequency, recency, and consistency.
-- [ ] Dashboard UX: searchable event log, pattern filters, pin/archive.
 
-## v0.3 — The "stays running" milestone
+## v0.3 — The "stays running" milestone (✅ shipped)
 
-- [ ] Scheduler (cron + event-triggered) with a run history log.
-- [ ] API-first adapters for Gmail, Slack, Linear, Notion (prefer APIs over GUI automation).
-- [ ] Tauri-based desktop app shell so the project is installable as a real app, not `python -m`.
+- [x] Scheduler (cron + event-triggered) with a run history log.
+- [x] API-first adapters for Gmail, Slack, Linear, Notion (prefer APIs over GUI automation).
+- [x] Tauri-based desktop app shell so the project is installable as a real app, not `python -m`.
 - [ ] Signed installers for macOS, Windows, Linux.
 - [ ] First-run walkthrough and privacy onboarding.
 
-## v0.4 — Local intelligence
+## v0.4 — Local intelligence (✅ shipped)
 
-- [ ] Local-only intent extraction (small model) so Claude is optional.
-- [ ] On-device NER to redact sensitive values before any outbound call.
-- [ ] Per-app privacy policies users can edit declaratively.
+- [x] Multi-provider intent extraction: Claude, OpenAI, OpenClaw, Ollama, local transformers.
+- [x] On-device NER to redact sensitive values before any outbound call.
+- [x] Per-app privacy policies users can edit declaratively.
 
-## v1.0 — Ready for real users
+## v1.0 — Ready for real users (✅ shipped)
 
-- [ ] Extensive sample agent library (file triage, meeting-note routing, recurring SaaS chores).
-- [ ] A curated OSS marketplace of shareable, portable agent specs.
-- [ ] Enterprise opt-in team-sync layer with SSO and RBAC.
+- [x] Sample agent library with 6 templates (file-triage, meeting-note-router, daily-standup-prep, email-followup, tab-cleanup, expense-logger).
+- [x] Curated agent marketplace for discovering, installing, and sharing templates.
+- [x] Tauri desktop app with native installers.
+
+## v1.1+ — Community & Enterprise (in planning)
+
+- [ ] Browser extension for richer web capture (DOM targets + URLs).
+- [ ] Community plugin system for custom adapters and agents.
+- [ ] Advanced scheduler UI with more trigger types and template management.
+- [ ] Improved agent library with more templates submitted by community.
+- [ ] Team collaboration features (shared agents, audit logs, team sync).
+- [ ] Enterprise features: SSO integration, RBAC, centralized audit logs.
+- [ ] Signed and notarized installers for all platforms.
+- [ ] Prompt templates and customization UI for agent behavior tuning.
 
 ## How to help
 
 Every line item above is an invitation. Good starting points:
 
-- Pick an adapter you'd use yourself and ship it — the first API integrations unlock the most real-world value.
-- Port the generic capture fallback to your OS — we'd rather have three imperfect backends than one perfect one.
-- Try Shadow on your own workflows and file issues when a pattern you expected to be discovered was missed.
+- **Adapters:** Pick a SaaS platform you'd use and build an adapter for it.
+- **Agents:** Design new sample templates or contribute your own to the marketplace.
+- **Capture:** Port the generic capture fallback or improve existing per-OS backends.
+- **UX:** Help shape the dashboard, onboarding, or privacy settings UI.
+- **Docs:** Expand architecture docs, write tutorials, or share your use cases.
+
+File an issue or open a discussion on GitHub to discuss your ideas. The roadmap is community-driven.

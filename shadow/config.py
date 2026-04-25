@@ -42,9 +42,27 @@ class Config:
     min_pattern_occurrences: int = 3
     similarity_threshold: float = 0.8
 
+    # Intent extraction — multi-provider support
+    intent_provider: str = "auto"  # "auto" | "claude" | "openai" | "openclaw" | "ollama" | "local" | "offline"
+    
     # Claude intent extraction
     anthropic_api_key: str | None = field(default_factory=lambda: os.environ.get("ANTHROPIC_API_KEY"))
     claude_model: str = "claude-sonnet-4-5-20241022"
+
+    # OpenAI intent extraction
+    openai_api_key: str | None = field(default_factory=lambda: os.environ.get("OPENAI_API_KEY"))
+    openai_model: str = "gpt-4o"
+
+    # OpenClaw intent extraction
+    openclaw_api_key: str | None = field(default_factory=lambda: os.environ.get("OPENCLAW_API_KEY"))
+    openclaw_model: str = "openclaw-default"
+
+    # Ollama local models
+    ollama_model: str = "llama3"
+    ollama_host: str = "http://localhost:11434"
+
+    # Local on-device model (transformers)
+    local_model: str = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
     # Dashboard
     dashboard_host: str = "127.0.0.1"

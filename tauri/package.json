@@ -1,0 +1,15 @@
+{
+  "productName": "Shadow",
+  "version": "0.1.0",
+  "description": "Watch your desktop. Learn your patterns. Forge them into agents.",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "@tauri-apps/api": "^2.0.0"
+  }
+}

@@ -13,10 +13,9 @@ from pathlib import Path
 from typing import Any
 
 from ..config import Config, config as default_config
-from ..intent import IntentExtractor
+from ..intent import AgentSpec
 from ..patterns import PatternDetector
 from ..runtime import AgentExecutor
-from ..intent import AgentSpec
 from ..storage import Database
 
 
@@ -84,6 +83,62 @@ class _Handler(BaseHTTPRequestHandler):
             ])
             return
 
+        if self.path == "/api/providers":
+            providers = ["claude", "openai", "openai-compatible", "ollama"]
+            active = "claude"
+            _json_response(self, {"providers": providers, "active": active})
+            return
+
+        if self.path == "/api/adapters":
+            _json_response(self, {
+                "adapters": [
+                    {"name": "macos", "available": True, "status": "active"},
+                    {"name": "windows", "available": True, "status": "inactive"},
+                    {"name": "linux", "available": True, "status": "inactive"},
+                ]
+            })
+            return
+
+        if self.path == "/api/schedule/rules":
+            _json_response(self, self.db.list_schedule_rules())
+            return
+
+        if self.path == "/api/schedule/history":
+            _json_response(self, self.db.get_schedule_history(limit=100))
+            return
+
+        if self.path == "/api/settings":
+            _json_response(self, {
+                "anthropic_api_key": "***" if self.cfg.anthropic_api_key else None,
+                "dashboard_host": self.cfg.dashboard_host,
+                "dashboard_port": self.cfg.dashboard_port,
+                "capture_poll_interval": getattr(self.cfg, "capture_poll_interval", 5),
+                "capture_idle_gap": getattr(self.cfg, "capture_idle_gap", 60),
+                "store_titles": getattr(self.cfg, "store_titles", True),
+                "store_urls": getattr(self.cfg, "store_urls", True),
+                "privacy_enabled": getattr(self.cfg, "privacy_enabled", False),
+            })
+            return
+
+        if self.path == "/api/marketplace":
+            try:
+                from ..agents import Marketplace
+                marketplace = Marketplace(self.db)
+                templates = []
+                for spec in marketplace.list_templates():
+                    templates.append({
+                        "name": spec.name,
+                        "summary": spec.summary,
+                        "trigger": spec.trigger,
+                        "inputs": spec.inputs,
+                        "notes": spec.notes,
+                        "steps_count": len(spec.steps),
+                    })
+                _json_response(self, {"templates": templates})
+            except ImportError:
+                _json_response(self, {"error": "agents module not available"}, status=503)
+            return
+
         _json_response(self, {"error": "not_found"}, status=404)
 
     def do_POST(self) -> None:  # noqa: N802
@@ -91,6 +146,43 @@ class _Handler(BaseHTTPRequestHandler):
             det = PatternDetector(self.db, self.cfg)
             new_ids = det.detect_and_persist()
             _json_response(self, {"new_pattern_ids": new_ids})
+            return
+
+        if self.path.startswith("/api/patterns/") and self.path.endswith("/pin"):
+            try:
+                pattern_id = int(self.path.split("/")[3])
+            except Exception:
+                _json_response(self, {"error": "bad pattern id"}, status=400)
+                return
+            new_state = self.db.toggle_pin(pattern_id)
+            _json_response(self, {"pinned": new_state})
+            return
+
+        if self.path.startswith("/api/patterns/") and self.path.endswith("/archive"):
+            try:
+                pattern_id = int(self.path.split("/")[3])
+            except Exception:
+                _json_response(self, {"error": "bad pattern id"}, status=400)
+                return
+            new_state = self.db.toggle_archive(pattern_id)
+            _json_response(self, {"archived": new_state})
+            return
+
+        if self.path == "/api/schedule/rules":
+            try:
+                content_length = int(self.headers.get("Content-Length", 0))
+                body = self.rfile.read(content_length).decode("utf-8")
+                data = json.loads(body)
+                pattern_id = data.get("pattern_id")
+                cron_expr = data.get("cron_expr")
+                event_trigger = data.get("event_trigger")
+                if not pattern_id or not cron_expr:
+                    _json_response(self, {"error": "missing pattern_id or cron_expr"}, status=400)
+                    return
+                rule_id = self.db.create_schedule_rule(pattern_id, cron_expr, event_trigger)
+                _json_response(self, {"id": rule_id, "pattern_id": pattern_id, "cron_expr": cron_expr})
+            except Exception as exc:
+                _json_response(self, {"error": str(exc)}, status=400)
             return
 
         if self.path.startswith("/api/patterns/") and self.path.endswith("/extract"):
@@ -112,8 +204,9 @@ class _Handler(BaseHTTPRequestHandler):
                 similarity=row["avg_similarity"],
                 sample_event_ids=row["sample_event_ids"],
             )
-            extractor = IntentExtractor(self.db, self.cfg)
             try:
+                from ..intent import IntentExtractor
+                extractor = IntentExtractor(self.db, self.cfg)
                 spec = extractor.extract(pattern)
             except Exception as exc:
                 _json_response(self, {"error": str(exc)}, status=500)
@@ -138,6 +231,32 @@ class _Handler(BaseHTTPRequestHandler):
             _json_response(self, [
                 {"step": r.step_index, "ok": r.ok, "message": r.message} for r in results
             ])
+            return
+
+        if self.path.startswith("/api/marketplace/") and self.path.endswith("/install"):
+            try:
+                template_name = self.path.split("/")[3]
+                from ..agents import Marketplace
+                marketplace = Marketplace(self.db)
+                pattern_id = marketplace.install_template(template_name)
+                _json_response(self, {"pattern_id": pattern_id, "name": template_name})
+            except ValueError as exc:
+                _json_response(self, {"error": str(exc)}, status=404)
+            except Exception as exc:
+                _json_response(self, {"error": str(exc)}, status=500)
+            return
+
+        _json_response(self, {"error": "not_found"}, status=404)
+
+    def do_DELETE(self) -> None:  # noqa: N802
+        if self.path.startswith("/api/schedule/rules/"):
+            try:
+                rule_id = int(self.path.split("/")[-1])
+            except Exception:
+                _json_response(self, {"error": "bad rule id"}, status=400)
+                return
+            self.db.delete_schedule_rule(rule_id)
+            _json_response(self, {"deleted": True})
             return
 
         _json_response(self, {"error": "not_found"}, status=404)

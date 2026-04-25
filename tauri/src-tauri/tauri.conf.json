@@ -1,0 +1,61 @@
+{
+  "productName": "Shadow",
+  "version": "0.1.0",
+  "identifier": "com.shadow.agent",
+  "build": {
+    "beforeDevCommand": "echo 'Tauri dev ready'",
+    "beforeBuildCommand": "echo 'Tauri build ready'",
+    "devPath": "http://127.0.0.1:4747",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Shadow — Desktop Agent Forge",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "focus": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage", "dmg", "msi"],
+    "identifier": "com.shadow.agent",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "dmg": {
+      "background": null,
+      "title": "Shadow"
+    },
+    "macOS": {
+      "frameworks": [],
+      "minimumSystemVersion": "10.13",
+      "signingIdentity": null,
+      "entitlements": null
+    },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "signingIdentity": null,
+      "timestampUrl": ""
+    },
+    "linux": {
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    }
+  }
+}

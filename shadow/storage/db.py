@@ -51,8 +51,32 @@ CREATE TABLE IF NOT EXISTS patterns (
     signature TEXT NOT NULL,
     sample_event_ids_json TEXT NOT NULL,
     intent_summary TEXT,
-    agent_spec_json TEXT
+    agent_spec_json TEXT,
+    pinned INTEGER DEFAULT 0,
+    archived INTEGER DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS schedule_rules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pattern_id INTEGER NOT NULL,
+    cron_expr TEXT NOT NULL,
+    event_trigger TEXT,
+    enabled INTEGER DEFAULT 1,
+    created_at REAL NOT NULL,
+    FOREIGN KEY (pattern_id) REFERENCES patterns(id)
+);
+
+CREATE TABLE IF NOT EXISTS schedule_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rule_id INTEGER NOT NULL,
+    ran_at REAL NOT NULL,
+    success INTEGER NOT NULL,
+    message TEXT,
+    FOREIGN KEY (rule_id) REFERENCES schedule_rules(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_schedule_rules_pattern ON schedule_rules(pattern_id);
+CREATE INDEX IF NOT EXISTS idx_schedule_history_rule ON schedule_history(rule_id);
 """
 
 
@@ -259,3 +283,76 @@ class Database:
                 "UPDATE patterns SET intent_summary = ?, agent_spec_json = ? WHERE id = ?",
                 (intent_summary, json.dumps(agent_spec), pattern_id),
             )
+
+    def toggle_pin(self, pattern_id: int) -> bool:
+        """Toggle pin status; returns new pin state."""
+        with self._cursor() as cur:
+            cur.execute("SELECT pinned FROM patterns WHERE id = ?", (pattern_id,))
+            row = cur.fetchone()
+            if row is None:
+                return False
+            new_state = 1 - row[0]
+            cur.execute("UPDATE patterns SET pinned = ? WHERE id = ?", (new_state, pattern_id))
+            return bool(new_state)
+
+    def toggle_archive(self, pattern_id: int) -> bool:
+        """Toggle archive status; returns new archive state."""
+        with self._cursor() as cur:
+            cur.execute("SELECT archived FROM patterns WHERE id = ?", (pattern_id,))
+            row = cur.fetchone()
+            if row is None:
+                return False
+            new_state = 1 - row[0]
+            cur.execute("UPDATE patterns SET archived = ? WHERE id = ?", (new_state, pattern_id))
+            return bool(new_state)
+
+    # ------------------------------------------------------------------
+    # Schedule Rules
+    # ------------------------------------------------------------------
+    def create_schedule_rule(
+        self, pattern_id: int, cron_expr: str, event_trigger: str | None = None
+    ) -> int:
+        with self._cursor() as cur:
+            cur.execute(
+                "INSERT INTO schedule_rules (pattern_id, cron_expr, event_trigger, created_at) "
+                "VALUES (?, ?, ?, ?)",
+                (pattern_id, cron_expr, event_trigger, time.time()),
+            )
+            return int(cur.lastrowid)
+
+    def list_schedule_rules(self) -> list[dict]:
+        cur = self._conn.execute(
+            "SELECT id, pattern_id, cron_expr, event_trigger, enabled, created_at "
+            "FROM schedule_rules ORDER BY created_at DESC"
+        )
+        return [dict(row) for row in cur.fetchall()]
+
+    def delete_schedule_rule(self, rule_id: int) -> None:
+        with self._cursor() as cur:
+            cur.execute("DELETE FROM schedule_rules WHERE id = ?", (rule_id,))
+
+    def toggle_schedule_rule(self, rule_id: int) -> bool:
+        """Toggle enabled status; returns new state."""
+        with self._cursor() as cur:
+            cur.execute("SELECT enabled FROM schedule_rules WHERE id = ?", (rule_id,))
+            row = cur.fetchone()
+            if row is None:
+                return False
+            new_state = 1 - row[0]
+            cur.execute("UPDATE schedule_rules SET enabled = ? WHERE id = ?", (new_state, rule_id))
+            return bool(new_state)
+
+    def add_schedule_run(self, rule_id: int, success: bool, message: str | None = None) -> None:
+        with self._cursor() as cur:
+            cur.execute(
+                "INSERT INTO schedule_history (rule_id, ran_at, success, message) VALUES (?, ?, ?, ?)",
+                (rule_id, time.time(), 1 if success else 0, message),
+            )
+
+    def get_schedule_history(self, limit: int = 100) -> list[dict]:
+        cur = self._conn.execute(
+            "SELECT id, rule_id, ran_at, success, message FROM schedule_history "
+            "ORDER BY ran_at DESC LIMIT ?",
+            (limit,),
+        )
+        return [dict(row) for row in cur.fetchall()]

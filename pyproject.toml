@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shadow-agent"
-version = "0.1.0"
+version = "1.0.0"
 description = "Watch your desktop, learn your patterns, and forge them into agents."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [{ name = "Shadow contributors" }]
-keywords = ["automation", "agent", "desktop", "ai", "claude", "anthropic", "workflow"]
+keywords = ["automation", "agent", "desktop", "ai", "claude", "anthropic", "workflow", "openai", "ollama"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: End Users/Desktop",
@@ -27,9 +27,19 @@ dependencies = [
 
 [project.optional-dependencies]
 intent = ["anthropic>=0.34"]
+openai = ["openai>=1.0"]
+openclaw = ["openclaw>=0.1"]
+ollama = ["ollama>=0.1"]
+local = ["transformers>=4.35", "torch>=2.0", "accelerate>=0.24"]
+all-providers = ["anthropic>=0.34", "openai>=1.0", "openclaw>=0.1", "ollama>=0.1", "transformers>=4.35", "torch>=2.0"]
 macos = ["pyobjc-core>=10", "pyobjc-framework-AppKit>=10", "pyobjc-framework-Quartz>=10"]
 windows = ["pywin32>=306"]
 generic = ["PyGetWindow>=0.0.9"]
+gmail = ["google-api-python-client>=2.0", "google-auth-oauthlib>=1.0"]
+slack = ["slack-sdk>=3.0"]
+linear = ["httpx>=0.24"]
+notion = ["httpx>=0.24"]
+all-adapters = ["google-api-python-client>=2.0", "google-auth-oauthlib>=1.0", "slack-sdk>=3.0", "httpx>=0.24"]
 dev = ["pytest>=7", "ruff>=0.4"]
 
 [project.scripts]
